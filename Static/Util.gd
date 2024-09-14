@@ -1,22 +1,22 @@
 class_name Util extends Node
 
-const HIT_TEXT: PackedScene = preload("res://Utility/HitText.tscn")
-const SCREEN_FLASH: PackedScene = preload("res://Utility/ScreenFlash.tscn")
+# const HIT_TEXT: PackedScene = preload("res://Utility/HitText.tscn")
+# const SCREEN_FLASH: PackedScene = preload("res://Utility/ScreenFlash.tscn")
 
-static func create_hit_text(target_node: Control, owner_node: Node, value: int, type: int = HitText.BOUNCING) -> void:
-	var inst: HitText = HIT_TEXT.instance()
-	owner_node.add_child(inst)
-	inst.init(value, target_node, type)
+# static func create_hit_text(target_node: Control, owner_node: Node, value: int, type: int = HitText.BOUNCING) -> void:
+	# var inst: HitText = HIT_TEXT.instance()
+	# owner_node.add_child(inst)
+	# inst.init(value, target_node, type)
 	
-static func screen_flash(node: Node, animation: String, use_owner: bool) -> ScreenFlash:
-	var inst: ScreenFlash = SCREEN_FLASH.instance()
-	if use_owner and node.owner != null:
-		node.owner.add_child(inst)
-	else:
-		node.add_child(inst)
+# static func screen_flash(node: Node, animation: String, use_owner: bool) -> ScreenFlash:
+	# var inst: ScreenFlash = SCREEN_FLASH.instance()
+	# if use_owner and node.owner != null:
+		# node.owner.add_child(inst)
+	# else:
+		# node.add_child(inst)
 		
-	inst.play(animation)
-	return inst
+	# inst.play(animation)
+	# return inst
 
 static func interweave_arrays(arr1: Array, arr2: Array) -> Array:
 	var arr3: Array = []
