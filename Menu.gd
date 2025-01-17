@@ -1,4 +1,4 @@
-# *** This is is the Godot 3 version.
+# *** This is the Godot 3 version.
 class_name Menu extends Control
 
 signal button_pressed(button)
