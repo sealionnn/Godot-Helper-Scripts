@@ -1,3 +1,4 @@
+# *** This is the Godot 4 version.
 class_name Menu extends Control
 
 signal button_focused(button: BaseButton)
