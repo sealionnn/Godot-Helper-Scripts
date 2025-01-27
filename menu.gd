@@ -1,21 +1,26 @@
-# *** This is the Godot 4 version.
+# Godot 4 version only. For Godot 3, find Menu.gd in the same folder on the Github.
+# By Tampopo Interactive Media
 class_name Menu extends Control
 
 signal button_focused(button: BaseButton)
 signal button_pressed(button: BaseButton)
+signal activated()
 signal closed()
 
 @export var auto_wrap: bool = true
-@export var buttons_container: Container = null
+@export var buttons_container: Control = null
 @export var hide_on_focus_exit: bool = false
 
 var index: int = 0
 var exiting: bool = false
 
 func _ready() -> void:
+	set_process_unhandled_input(false)
+	activated.connect(Menus._on_menu_activated.bind(self))
+	closed.connect(Menus._on_menu_closed.bind(self))
+	
+	assert(buttons_container, "buttons_container not set on menu " + name + ". ")
 	if !buttons_container:
-		queue_free()
-		print("No buttons container set on menu.")
 		return
 		
 	tree_exiting.connect(_on_tree_exiting)
@@ -43,7 +48,7 @@ func _ready() -> void:
 				var top_row: Array = []
 				var bottom_row: Array = []
 				var cols: int = self.columns
-				var rows: int = round(buttons.size() / cols)
+				var rows: int = roundi(buttons.size() / cols) # TODO make sure this roundi() (instead of round()) does not break it
 				var btm_range: Array = [rows * cols - cols, rows * cols - 1]
 		#		var btm_range: Array = [rows * (cols - 1) + 1, rows * cols]
 
@@ -102,18 +107,21 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		button_enable_focus(false)
 		closed.emit()
-
+		get_viewport().set_input_as_handled()
+		
 func get_buttons_count() -> int:
-	return get_child_count()
+	return buttons_container.get_child_count()
 
 func get_buttons() -> Array:
 	return buttons_container.get_children()
 
 func connect_to_buttons(target: Object, _name: String = name) -> void:
+	_name = _name.to_lower()
+	
 	var callable: Callable = Callable()
-	callable = Callable(target, "_on_" + _name + "_focused")
+	callable = Callable(target, "_on_" + _name + "_button_focused")
 	button_focused.connect(callable)
-	callable = Callable(target, "_on_" + _name + "_pressed")
+	callable = Callable(target, "_on_" + _name + "_button_pressed")
 	button_pressed.connect(callable)
 
 func button_enable_focus(on: bool) -> void:
@@ -123,15 +131,35 @@ func button_enable_focus(on: bool) -> void:
 	
 	if hide_on_focus_exit:	
 		visible = on
+		
+	set_process_unhandled_input(on)
+	#print(name + " is " + "on" if on else name + " is " + "off")
 
 func button_focus(n: int = index) -> void:
+	var menu_is_focused: bool = false
+	var focus_owner: Control = get_viewport().gui_get_focus_owner()
+	for button in get_buttons():
+		if button == focus_owner:
+			menu_is_focused = true
+			break
+			
+	if !menu_is_focused:
+		activated.emit()
+	
 	await get_tree().process_frame
 	if get_buttons_count() > 0:
 		button_enable_focus(true)
 		n = clampi(n, 0, get_buttons_count()-1)
 		var button: BaseButton = get_buttons()[n]
-		button.grab_focus()
+		
+		if button.is_inside_tree():
+			button.grab_focus()
+		show()
 
+func _on_Button_focused(button: BaseButton) -> void:
+	index = button.get_index()
+	emit_signal("button_focused", button)
+	
 func _on_Button_focus_exited(_button: BaseButton) -> void:
 	await get_tree().process_frame
 	if exiting:
@@ -140,10 +168,6 @@ func _on_Button_focus_exited(_button: BaseButton) -> void:
 	if not get_viewport().gui_get_focus_owner() in get_buttons():
 		button_enable_focus(false)
 
-func _on_Button_focused(button: BaseButton) -> void:
-	index = button.get_index()
-	emit_signal("button_focused", button)
-		
 func _on_Button_pressed(button: BaseButton) -> void:
 	emit_signal("button_pressed", button)
 
