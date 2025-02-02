@@ -16,8 +16,6 @@ var exiting: bool = false
 
 func _ready() -> void:
 	set_process_unhandled_input(false)
-	activated.connect(Menus._on_menu_activated.bind(self))
-	closed.connect(Menus._on_menu_closed.bind(self))
 	
 	assert(buttons_container, "buttons_container not set on menu " + name + ". ")
 	if !buttons_container:
