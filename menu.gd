@@ -5,7 +5,6 @@ class_name Menu extends Control
 signal button_focused(button: BaseButton)
 signal button_pressed(button: BaseButton)
 signal activated()
-signal closed()
 
 @export var auto_wrap: bool = true
 @export var buttons_container: Control = null
@@ -100,12 +99,6 @@ func _ready() -> void:
 			last_button.focus_neighbor_right = first_button.get_path()
 		
 	button_enable_focus(false)
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
-		button_enable_focus(false)
-		closed.emit()
-		get_viewport().set_input_as_handled()
 		
 func get_buttons_count() -> int:
 	return buttons_container.get_child_count()
