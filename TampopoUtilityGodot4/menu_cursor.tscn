@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://bvv1nbodycp04"]
+
+[ext_resource type="Texture2D" uid="uid://b3u1qkbit6gnj" path="res://Utility/Art/hand_cursor_16.png" id="1_fygej"]
+[ext_resource type="Script" path="res://Utility/menu_cursor.gd" id="2_0u8jx"]
+
+[node name="MenuCursor" type="TextureRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -304.0
+offset_bottom = -164.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_fygej")
+stretch_mode = 2
+script = ExtResource("2_0u8jx")

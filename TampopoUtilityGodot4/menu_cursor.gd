@@ -1,7 +1,3 @@
-# This is a Godot 4 variant menu cursor that automatically follows the focus of the GUI target.
-# How to use it: add to a scene and give it a sprite. Adjust OFFSET based on your needs.
-# By Tampopo Interactive Media
-
 class_name MenuCursor extends TextureRect
 
 const OFFSET: Vector2 = Vector2(-16, -2)

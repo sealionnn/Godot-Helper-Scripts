@@ -1,33 +1,40 @@
-# Godot 4 version only. For Godot 3, find Menu.gd in the same folder on the Github.
-# By Tampopo Interactive Media
 class_name Menu extends Control
 
 signal button_focused(button: BaseButton)
 signal button_pressed(button: BaseButton)
 signal activated()
+signal closed()
 
 @export var auto_wrap: bool = true
 @export var buttons_container: Control = null
 @export var hide_on_focus_exit: bool = false
+@export var is_dummy: bool = false
 
 var index: int = 0
 var exiting: bool = false
+var highlight_all: bool = false
 
 func _ready() -> void:
 	set_process_unhandled_input(false)
+	if !is_dummy:
+		assert(buttons_container, "buttons_container not set on menu " + name + ". ")
 	
-	assert(buttons_container, "buttons_container not set on menu " + name + ". ")
-	if !buttons_container:
+	# General connections.
+	activated.connect(Menus._on_menu_activated.bind(self))
+	closed.connect(Menus._on_menu_closed.bind(self))
+	tree_exiting.connect(_on_tree_exiting)
+	
+	if is_dummy:
 		return
 		
-	tree_exiting.connect(_on_tree_exiting)
+	# Set up buttons.
 	
 	# Connect to buttons.
 	for button in get_buttons():
-		button.focus_exited.connect(_on_Button_focus_exited.bind(button))
-		button.focus_entered.connect(_on_Button_focused.bind(button))
-		button.pressed.connect(_on_Button_pressed.bind(button))
-		button.tree_exiting.connect(_on_Button_tree_exiting.bind(button))
+		button.focus_exited.connect(_on_button_focus_exited.bind(button))
+		button.focus_entered.connect(_on_button_focused.bind(button))
+		button.pressed.connect(_on_button_pressed.bind(button))
+		button.tree_exiting.connect(_on_button_tree_exiting.bind(button))
 	
 	# Set focus neighbors.
 	# TODO Fix for grids (poss only issue with > 2 col grid)	
@@ -99,11 +106,25 @@ func _ready() -> void:
 			last_button.focus_neighbor_right = first_button.get_path()
 		
 	button_enable_focus(false)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		button_enable_focus(false)
+		#visible = !hide_on_focus_exit
+		closed.emit()
+		get_viewport().set_input_as_handled()
+
+func set_highlight_all(on: bool) -> void:
+	highlight_all = on
 		
 func get_buttons_count() -> int:
+	if !buttons_container:
+		return 0
 	return buttons_container.get_child_count()
 
 func get_buttons() -> Array:
+	if !buttons_container:
+		return []
 	return buttons_container.get_children()
 
 func connect_to_buttons(target: Object, _name: String = name) -> void:
@@ -126,43 +147,70 @@ func button_enable_focus(on: bool) -> void:
 	set_process_unhandled_input(on)
 	#print(name + " is " + "on" if on else name + " is " + "off")
 
-func button_focus(n: int = index) -> void:
-	var menu_is_focused: bool = false
+func menu_is_focused() -> bool:
 	var focus_owner: Control = get_viewport().gui_get_focus_owner()
+	
 	for button in get_buttons():
 		if button == focus_owner:
-			menu_is_focused = true
-			break
-			
-	if !menu_is_focused:
+			return true
+	return false
+
+func button_focus(n: int = index) -> void:
+	if !menu_is_focused():
 		activated.emit()
 	
 	await get_tree().process_frame
+	show()
+	button_enable_focus(true)
+	
 	if get_buttons_count() > 0:
-		button_enable_focus(true)
 		n = clampi(n, 0, get_buttons_count()-1)
 		var button: BaseButton = get_buttons()[n]
 		
 		if button.is_inside_tree():
-			button.grab_focus()
-		show()
+			if button.visible:
+				button.grab_focus()
+			else:
+				get_first_focusable_button(true)
+	else:
+		var focus_owner: Control = get_viewport().gui_get_focus_owner()
+		if focus_owner:
+			focus_owner.release_focus()
 
-func _on_Button_focused(button: BaseButton) -> void:
+func get_first_focusable_button(and_focus: bool) -> BaseButton:
+	for button in get_buttons():
+		if button.visible and !button.disabled:
+			if and_focus:
+				button.grab_focus()
+			return button
+	return null
+
+func _on_button_focused(button: BaseButton) -> void:
 	index = button.get_index()
 	emit_signal("button_focused", button)
 	
-func _on_Button_focus_exited(_button: BaseButton) -> void:
+	if highlight_all:
+		for node in get_buttons():
+			node.highlight(true)
+	
+func _on_button_focus_exited(_button: BaseButton) -> void:
 	await get_tree().process_frame
+	
 	if exiting:
 		return
 		
 	if not get_viewport().gui_get_focus_owner() in get_buttons():
 		button_enable_focus(false)
+		
+		if highlight_all:
+			for node in get_buttons():
+				node.highlight(false)
+		set_highlight_all(false)
 
-func _on_Button_pressed(button: BaseButton) -> void:
+func _on_button_pressed(button: BaseButton) -> void:
 	emit_signal("button_pressed", button)
 
-func _on_Button_tree_exiting(button: BaseButton) -> void:
+func _on_button_tree_exiting(button: BaseButton) -> void:
 	if get_viewport().gui_get_focus_owner() == button:
 		button_focus(index - 1)
 
