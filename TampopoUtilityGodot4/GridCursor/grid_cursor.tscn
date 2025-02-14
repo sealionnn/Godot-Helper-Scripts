@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://bair756jcfotv"]
+
+[ext_resource type="Texture2D" uid="uid://hq3claotthdv" path="res://Utility/GridCursor/grid_cursor_corners.png" id="1_1hf8d"]
+[ext_resource type="Script" path="res://Utility/GridCursor/grid_cursor.gd" id="2_rrdyg"]
+
+[node name="GridCursor" type="Sprite2D"]
+modulate = Color(1, 1, 1, 0.270588)
+texture = ExtResource("1_1hf8d")
+centered = false
+script = ExtResource("2_rrdyg")

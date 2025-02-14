@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://banbi6hxbsxu6"]
+
+[ext_resource type="Texture2D" uid="uid://c2cc18tun8px0" path="res://Utility/MouseCursor/mouse_cursor_minimal.png" id="1_x4feu"]
+[ext_resource type="Script" path="res://Utility/MouseCursor/mouse_cursor.gd" id="2_i3ba7"]
+
+[node name="MouseCursor" type="Sprite2D"]
+texture = ExtResource("1_x4feu")
+centered = false
+script = ExtResource("2_i3ba7")
