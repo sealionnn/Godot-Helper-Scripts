@@ -20,8 +20,8 @@ func _ready() -> void:
 		assert(buttons_container, "buttons_container not set on menu " + name + ". ")
 	
 	# General connections.
-	activated.connect(Menus._on_menu_activated.bind(self))
-	closed.connect(Menus._on_menu_closed.bind(self))
+	#activated.connect(Menus._on_menu_activated.bind(self))
+	#closed.connect(Menus._on_menu_closed.bind(self))
 	tree_exiting.connect(_on_tree_exiting)
 	
 	if is_dummy:
