@@ -1,3 +1,5 @@
+# Use this version of menu.gd for new projects or following along with my videos that are from April 2025 onward.
+
 class_name Menu extends Control
 
 signal button_focused(button: BaseButton, index: int)
