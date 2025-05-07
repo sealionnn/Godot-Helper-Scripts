@@ -1,9 +1,7 @@
-Credit:
+CREDIT:
 
-Feel free to use these scripts in your projects. If you feel inclined to do so, you can credit "Tampopo Interactive Media" (and include the Youtube link below if you want).
+* Feel free to use these scripts in your projects. If you feel inclined to do so, you can credit "Tampopo Interactive Media" (and include the Youtube link if you want). https://www.youtube.com/@TampopoInteractive
 
-Some of the code in these scripts is not my own, and I credit the creators accordingly--please credit these other people if you use their code. 
+* Small parts of the code is not my own and are labeled as such.
 
-https://www.youtube.com/@TampopoInteractive
-
-PS: These could use a bit of editing, but I wanted to get them posted early so that viewers have access to these to follow along more easily with my tutorials without copying all of the functions I use.
+* This is a constant work in progress. If you are following along with a video and run into issues, please let me know in the comments of that video.
