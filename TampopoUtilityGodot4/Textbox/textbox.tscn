@@ -1,0 +1,47 @@
+[gd_scene load_steps=3 format=3 uid="uid://duoyklvanun7a"]
+
+[ext_resource type="Script" path="res://Utility/Textbox/textbox.gd" id="1_qrjcb"]
+[ext_resource type="AudioStream" uid="uid://cmfkddt0xhw77" path="res://Utility/Textbox/typing.tres" id="2_pi83d"]
+
+[node name="Textbox" type="PanelContainer"]
+process_mode = 3
+custom_minimum_size = Vector2(128, 40)
+offset_right = 128.0
+offset_bottom = 48.0
+script = ExtResource("1_qrjcb")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer"]
+layout_mode = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Speaker" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+text = "Speaker:"
+
+[node name="Dialogue" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(1, 1)
+layout_mode = 2
+size_flags_vertical = 3
+text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras finibus ultricies facilisis. Mauris convallis euismod est vitae rhoncus. Nam nisl libero, vulputate vel ex vel, vulputate blandit nulla. Aliquam nulla enim, facilisis convallis lectus quis, blandit ultrices nibh. Quisque accumsan tristique magna, quis blandit orci dictum ut. Cras sed porttitor nunc. Suspendisse sollicitudin risus eget felis ullamcorper posuere. Fusce placerat sed augue accumsan tristique. In sagittis neque dui, vitae ullamcorper tellus viverra non. Nullam laoreet neque ac justo ullamcorper, sit amet condimentum mauris cursus. Suspendisse ut ornare erat, quis porttitor mauris. Nunc id viverra turpis. Duis elementum imperdiet leo, a rutrum ipsum venenatis et."
+autowrap_mode = 3
+
+[node name="Typewriter" type="Timer" parent="."]
+wait_time = 0.075
+
+[node name="Typing" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_pi83d")
+volume_db = -8.0
+
+[connection signal="timeout" from="Typewriter" to="." method="_on_typewriter_timeout"]

@@ -1,0 +1,15 @@
+[gd_resource type="AudioStreamRandomizer" load_steps=4 format=3 uid="uid://cmfkddt0xhw77"]
+
+[ext_resource type="AudioStream" uid="uid://iuvnoafi8la7" path="res://Utility/Textbox/typing-sound-01-229863.mp3" id="1_iudw5"]
+[ext_resource type="AudioStream" uid="uid://vcdt10lq0o45" path="res://Utility/Textbox/typing-sound-02-229861.mp3" id="2_r5psc"]
+[ext_resource type="AudioStream" uid="uid://tu0doi8qvxbd" path="res://Utility/Textbox/Bump.wav" id="3_cb5xr"]
+
+[resource]
+random_pitch = 1.2
+random_volume_offset_db = 12.0
+streams_count = 3
+stream_0/stream = ExtResource("1_iudw5")
+stream_1/stream = ExtResource("2_r5psc")
+stream_1/weight = 0.25
+stream_2/stream = ExtResource("3_cb5xr")
+stream_2/weight = 0.25
