@@ -151,3 +151,21 @@ static func convert_int_array_to_bool_array(arr1: Array) -> Array:
 	for value in arr1:
 		arr2.append(value > 0)
 	return arr2
+
+func load_resources_to_dict(path: String, dict: Dictionary) -> void:
+	var dir: DirAccess = DirAccess.open(path)
+	if dir:
+		dir.list_dir_begin()
+		var file_name = dir.get_next()
+		while file_name != "":
+			if dir.current_is_dir():
+				print("Found directory: " + file_name)
+			else:
+				#print("Found file: " + file_name)
+				var key: String = file_name.replace(".tres", "")
+				dict[key] = load(path + file_name)
+				dict[key].key = key
+				
+			file_name = dir.get_next()
+	else:
+		print("An error occurred when trying to access the path.")
