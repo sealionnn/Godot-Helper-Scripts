@@ -2,8 +2,9 @@
 ### by Tampopo Interactive Media
 ### [https://www.youtube.com/@TampopoInteractive](https://www.youtube.com/@TampopoInteractive)
 
-## "Install"
+## Instructions
 1. Click the green 'Code' button, then 'Download ZIP'.
-2. Extract.
-3. Drag into your project the folder that corresponds with your version of Godot. (If you keep both Godot 3 and Godot 4 versions in your project, it will cause errors.)
-4. Rename the folder to "Utility".
+2. Extract the files.
+3. Open the folder that corresponds to your version of Godot/the video series that you are following. ('Godot 3' or 'Godot 4'.)
+4. Copy the Utility folder to your project.
+5. If you run into any issues/bugs, please let me know in the comments of the video you are following along with.
