@@ -152,7 +152,7 @@ static func convert_int_array_to_bool_array(arr1: Array) -> Array:
 		arr2.append(value > 0)
 	return arr2
 
-func load_resources_to_dict(path: String, dict: Dictionary) -> void:
+static func load_resources_to_dict(path: String, dict: Dictionary) -> void:
 	var dir: DirAccess = DirAccess.open(path)
 	if dir:
 		dir.list_dir_begin()
