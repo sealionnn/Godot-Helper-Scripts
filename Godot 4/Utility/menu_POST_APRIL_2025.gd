@@ -63,71 +63,7 @@ func _ready() -> void:
 		buttons.append(button)
 		#print(button.text)
 		
-	# Set focus neighbors.
-	# TODO Fix for grids (poss only issue with > 2 col grid)	
-	# NOTE Negative separation values will cause issues with auto neighbor focus for middle controls.
-	if !auto_wrap:
-		return
-	
-	var _class: String = buttons_container.get_class()
-	
-	match _class:
-		"GridContainer":
-			var top_row: Array = []
-			var bottom_row: Array = []
-			var cols: int = buttons_container.columns
-			var rows: int = roundi(buttons.size() / cols)
-			var btm_range: Array = [rows * cols - cols, rows * cols - 1]
-	#		var btm_range: Array = [rows * (cols - 1) + 1, rows * cols]
-
-	#		print(btm_range)
-
-			#if clear_first:
-				#for button in buttons:
-					#button.focus_neighbor_top = null
-					#button.focus_neighbor_bottom = null
-
-			# Get top and bottom rows of buttons.
-			for x in cols:
-	#			print(buttons[x].text)
-				top_row.append(buttons[x])
-			for x in range(btm_range[0], btm_range[1] + 1):
-	#			print(x)
-				if x > buttons.size():
-	#				print(buttons[x - cols].text)
-					bottom_row.append(buttons[x - cols])
-					continue
-	#			print(buttons[x].text)
-				bottom_row.append(buttons[x])
-
-			# Change their focus neighbors accordingly.
-			for x in cols:
-				var top_button: BaseButton = top_row[x]
-				var bottom_button: BaseButton = bottom_row[x]
-	#			print(top_button)
-	#			print(bottom_button)
-				if top_button == bottom_button:
-					continue
-				top_button.focus_neighbor_top = bottom_button.get_path()
-				bottom_button.focus_neighbor_bottom = top_button.get_path()
-
-			# Repeat for left and right columns.	
-			for i in range(0, buttons.size(), cols):
-				var left_button: BaseButton = buttons[i]
-				var right_button: BaseButton = buttons[i + cols - 1]
-	#			print(left_button, "...", right_button)
-				left_button.focus_neighbor_left = right_button.get_path()
-				right_button.focus_neighbor_right = left_button.get_path()
-		"VBoxContainer":
-			var top_button: BaseButton = buttons.front()
-			var bottom_button: BaseButton = buttons.back()
-			top_button.focus_neighbor_top = bottom_button.get_path()
-			bottom_button.focus_neighbor_bottom = top_button.get_path()
-		"HBoxContainer":
-			var first_button: BaseButton = buttons.front()
-			var last_button: BaseButton = buttons.back()
-			first_button.focus_neighbor_left = last_button.get_path()
-			last_button.focus_neighbor_right = first_button.get_path()
+	_set_focus_neighbors()
 		
 	button_enable_focus(false)
 	
@@ -149,6 +85,102 @@ func _unhandled_input(event: InputEvent) -> void:
 			hide()
 		closed.emit()
 		get_viewport().set_input_as_handled()
+
+func _set_focus_neighbors() -> void:
+	# TODO Add support for GridContainers with columns > 2.
+	# NOTE This does not work with GridContainers that have columns > 2.
+	# NOTE Negative separation values will cause issues with auto neighbor focus for middle controls.
+	# NOTE This could be optimized a bit, but it is not a huge deal since it runs once per menu, but...
+	# TODO Need to add a way to queue this anytime we are changing the buttons_container's contents.
+	await(get_tree().process_frame) # In case we modify buttons on _ready elsewhere.
+	
+	var buttons: Array[Node] = get_buttons()
+	var _class: String = buttons_container.get_class()
+	
+	match _class:
+		"GridContainer":
+			var top_row: Array = []
+			var bottom_row: Array = []
+			var cols: int = buttons_container.columns
+			@warning_ignore("integer_division")
+			var rows: int = roundi(buttons.size() / cols)
+			var btm_range: Array = [rows * cols - cols, rows * cols - 1]
+	#		var btm_range: Array = [rows * (cols - 1) + 1, rows * cols]
+	#		print(btm_range)
+			
+			#if clear_first:
+				#for button in buttons:
+					#button.focus_neighbor_top = null
+					#button.focus_neighbor_bottom = null
+			
+			# Get top and bottom rows of buttons.
+			for x in cols:
+	#			print(buttons[x].text)
+				top_row.append(buttons[x])
+			for x in range(btm_range[0], btm_range[1] + 1):
+	#			print(x)
+				if x > buttons.size():
+	#				print(buttons[x - cols].text)
+					bottom_row.append(buttons[x - cols])
+					continue
+	#			print(buttons[x].text)
+				bottom_row.append(buttons[x])
+			
+			# Change their focus neighbors accordingly.
+			for x in cols:
+				var top_button: BaseButton = top_row[x]
+				var bottom_button: BaseButton = bottom_row[x]
+	#			print(top_button)
+	#			print(bottom_button)
+				if top_button == bottom_button:
+					continue
+				
+				if auto_wrap:
+					top_button.focus_neighbor_top = bottom_button.get_path()
+					top_button.focus_previous = bottom_button.get_path()
+					bottom_button.focus_neighbor_bottom = top_button.get_path()
+					bottom_button.focus_next = top_button.get_path()
+				else:
+					# Keep focus on this one.
+					top_button.focus_neighbor_top = top_button.get_path()
+					top_button.focus_previous = top_button.get_path()
+					bottom_button.focus_neighbor_bottom = bottom_button.get_path()
+					bottom_button.focus_next = bottom_button.get_path()
+			
+			# Repeat for left and right columns.	
+			for i in range(0, buttons.size(), cols):
+				var left_button: BaseButton = buttons[i]
+				var right_button: BaseButton = buttons[i + cols - 1]
+	#			print(left_button, "...", right_button)
+				left_button.focus_neighbor_left = right_button.get_path()
+				right_button.focus_neighbor_right = left_button.get_path()
+		"VBoxContainer", "HBoxContainer":
+			var first_button: BaseButton = buttons.front()
+			var last_button: BaseButton = buttons.back()
+			var first_button_path: NodePath = first_button.get_path()
+			var last_button_path: NodePath = last_button.get_path()
+			var first_neighbor_key: String = "focus_neighbor_left"
+			var last_neighbor_key: String = "focus_neighbor_right"
+			var path: NodePath = ""
+			
+			if _class == "VBoxContainer":
+				first_neighbor_key = "focus_neighbor_top"
+				last_neighbor_key = "focus_neighbor_bottom"
+				
+				for button: Node in buttons:
+					path = button.get_path()
+					button.focus_neighbor_left = path
+					button.focus_neighbor_right = path
+			else:
+				for button: Node in buttons:
+					path = button.get_path()
+					button.focus_neighbor_top = path
+					button.focus_neighbor_bottom = path
+			
+			first_button.set(first_neighbor_key, last_button_path)
+			first_button.focus_previous = last_button_path
+			last_button.set(last_neighbor_key, first_button_path)
+			last_button.focus_next = first_button_path
 
 func _close_menus_in_front_of_self() -> void:
 	var tree_pos: int = tree.rfind(self)
