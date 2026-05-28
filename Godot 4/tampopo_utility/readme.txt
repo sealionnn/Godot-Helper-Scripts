@@ -1,9 +1,10 @@
 NOTE:
 
-If you are using these assets to follow along with a tutorial that I made before April 2025, then you probably want to use do the following.
+If you are using these assets to follow along with a tutorial that I made before April 2025, then you probably want to do the following.
 
-1. Comment out (CTRL + K) the 'class_name Menu extends Control' at the top of the "POST_APRIL_2025" version of menu.
+1. Within the Godot script editor, comment out (CTRL + K) the 'class_name Menu extends Control' at the top of the "POST_APRIL_2025" version of menu.
 2. Uncomment that same line in the "PRE_APRIL_2025" version. This is because I am supporting all of my videos with these assets in one place, but I have the new version "enabled" by default.
+3. Save your changes.
 
 CREDIT:
 
