@@ -1,6 +1,6 @@
 # Use this version to follow along with tutorials from before April 2025.
 
-class_name Menu extends Control
+# class_name Menu extends Control
 
 signal button_focused(button: BaseButton, index: int)
 signal button_pressed(button: BaseButton, index: int)
